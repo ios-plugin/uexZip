@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<uexplugins>
+    <plugin name="uexZip">
+        <method name="zip"></method>
+        <method name="zipWithPassword"></method>
+		<method name="unzip"></method>
+		<method name="unzipWithPassword"></method>
+	</plugin>
+</uexplugins>
