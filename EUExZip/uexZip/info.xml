@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <uexplugins>
-    <plugin uexName="uexZip" version="3.0.1.1" build = "1">
-        <info>1.1:解决压缩和解压缩大文件时，卡屏问题</info>
+    <plugin uexName="uexZip" version="3.0.2" build = "2">
+        <info>2:解决压缩和解压缩大文件时，卡屏问题</info>
         <build>1:使用新版Xcode重新编译,支持arm64</build>
         <build>0:zip压缩解压功能插件</build>
 	</plugin>
