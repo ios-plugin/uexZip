@@ -23,7 +23,7 @@
 }
 
 
--(void)zip:(NSMutableArray *)inArguments {
+-(void)zipThread:(NSMutableArray *)inArguments {
 	NSString *inSrcPath = [inArguments objectAtIndex:0];
 	NSString *inZippedPath = [inArguments objectAtIndex:1];
     NSString *inPassword = nil;
@@ -81,12 +81,17 @@
 		[zipObj release];
         isZipWithPassword = NO;
 		if ([fmanager fileExistsAtPath:trueZippedPath]) {
-			[self jsSuccessWithName:@"uexZip.cbZip" opId:0 dataType:UEX_CALLBACK_DATATYPE_INT intData:UEX_CSUCCESS];
+            NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbZip",@"uexZip.cbZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CSUCCESS];
+            [self mainThreadCallBack:jsString];
+
 		}else {
-			[self jsSuccessWithName:@"uexZip.cbZip" opId:0 dataType:UEX_CALLBACK_DATATYPE_INT intData:UEX_CFAILED];
+            NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbZip",@"uexZip.cbZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CFAILED];
+            [self mainThreadCallBack:jsString];
 		}
 	}else{
-		[self jsFailedWithOpId:0 errorCode:1260101 errorDes:UEX_ERROR_DESCRIBE_ARGS];
+        NSString *inErrorDes =[UEX_ERROR_DESCRIBE_ARGS stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *jsFailedStr = [NSString stringWithFormat:@"if(uexWidgetOne.cbError!=null){uexWidgetOne.cbError(%d,%d,\'%@\');}",0,1260101,inErrorDes];
+        [self mainThreadCallBack:jsFailedStr];
 	}
 }
 
@@ -97,60 +102,102 @@
     }
 }
 
--(void)unzip:(NSMutableArray *)inArguments {
-	NSString *inSrcPath = [inArguments objectAtIndex:0];
-	NSString *inunZippedPath = [inArguments objectAtIndex:1];
+-(void)zip:(NSMutableArray *)inArguments {
+    
+    [NSThread detachNewThreadSelector:@selector(zipThread:) toTarget:self withObject:inArguments];
+}
+
+
+-(void)unzipThread:(NSMutableArray *)inArguments {
+    NSString *inSrcPath = [inArguments objectAtIndex:0];
+    NSString *inunZippedPath = [inArguments objectAtIndex:1];
     NSString *inPassword = nil;
+    
     if (isUnZipWithPassword) {
         if ([inArguments isKindOfClass:[NSMutableArray class]] && [inArguments count]>2) {
             inPassword = [inArguments objectAtIndex:2];
         }
     }
     
-	BOOL ret = NO;
-	NSString *trueSrcPath = [super absPath:inSrcPath];
-	NSString *trueUnzippedPath = [super absPath:inunZippedPath];
-	if (trueSrcPath!=nil && trueUnzippedPath!=nil) {
-		NSFileManager *fmanager = [NSFileManager defaultManager];
-		if (![fmanager fileExistsAtPath:trueUnzippedPath]) {
-			[fmanager createDirectoryAtPath:trueUnzippedPath withIntermediateDirectories:YES attributes:nil error:nil];
-		}
-		if ([fmanager fileExistsAtPath:trueSrcPath]) {
-			ZipArchive *zipObj = [[ZipArchive alloc] init];
+    BOOL ret = NO;
+    NSString *trueSrcPath = [super absPath:inSrcPath];
+    NSString *trueUnzippedPath = [super absPath:inunZippedPath];
+    if (trueSrcPath!=nil && trueUnzippedPath!=nil) {
+        NSFileManager *fmanager = [NSFileManager defaultManager];
+        if (![fmanager fileExistsAtPath:trueUnzippedPath]) {
+            [fmanager createDirectoryAtPath:trueUnzippedPath withIntermediateDirectories:YES attributes:nil error:nil];
+        }
+        if ([fmanager fileExistsAtPath:trueSrcPath]) {
+            ZipArchive *zipObj = [[ZipArchive alloc] init];
             if (isUnZipWithPassword) {
-                [zipObj UnzipOpenFile:trueSrcPath Password:inPassword];
+                ret = [zipObj UnzipOpenFile:trueSrcPath Password:inPassword];
             }else{
                 //当state为yes 证明是带有密码的压缩包 需要使用 UnzipOpenFile Password 接口
                 if (State) {
                     [zipObj UnzipCloseFile];
                     [zipObj release];
                     isUnZipWithPassword = NO;
-                    [self jsSuccessWithName:@"uexZip.cbUnZip" opId:0 dataType:UEX_CALLBACK_DATATYPE_INT intData:UEX_CFAILED];
+                    NSError *error;
+                    [fmanager removeItemAtPath:trueUnzippedPath error:&error];
+                    
+                    NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbUnZip",@"uexZip.cbUnZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CFAILED];
+                    [self mainThreadCallBack:jsString];
+
                     return;
                 }else{
                     [zipObj UnzipOpenFile:trueSrcPath];
                 }
             }
-			ret = [zipObj UnzipFileTo:trueUnzippedPath overWrite:YES];
-			[zipObj UnzipCloseFile];
-			[zipObj release];
-		}
+            ret = [zipObj UnzipFileTo:trueUnzippedPath overWrite:YES];
+            [zipObj UnzipCloseFile];
+            [zipObj release];
+        }
         isUnZipWithPassword = NO;
-		if (ret) {
-			[self jsSuccessWithName:@"uexZip.cbUnZip" opId:0 dataType:UEX_CALLBACK_DATATYPE_INT intData:UEX_CSUCCESS];
-		}else {
-			[self jsSuccessWithName:@"uexZip.cbUnZip" opId:0 dataType:UEX_CALLBACK_DATATYPE_INT intData:UEX_CFAILED];
-		} 		
-	}else{
-		[self jsFailedWithOpId:0 errorCode:1260201 errorDes:UEX_ERROR_DESCRIBE_ARGS];
-	}
+        if (ret) {
+            NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbUnZip",@"uexZip.cbUnZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CSUCCESS];
+            [self mainThreadCallBack:jsString];
+
+        }else {
+            NSError *error;
+            [fmanager removeItemAtPath:trueUnzippedPath error:&error];
+            
+            NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbUnZip",@"uexZip.cbUnZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CFAILED];
+            [self mainThreadCallBack:jsString];
+
+        } 		
+    }else{
+        NSString *inErrorDes =[UEX_ERROR_DESCRIBE_ARGS stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSString *jsFailedStr = [NSString stringWithFormat:@"if(uexWidgetOne.cbError!=null){uexWidgetOne.cbError(%d,%d,\'%@\');}",0,1260201,inErrorDes];
+        [self mainThreadCallBack:jsFailedStr];
+
+    }
+
+}
+
+
+-(void)unzip:(NSMutableArray *)inArguments {
+    
+    [NSThread detachNewThreadSelector:@selector(unzipThread:) toTarget:self withObject:inArguments];
 }
 
 -(void)unzipWithPassword:(NSMutableArray *)inArguments {
+    
     if ([inArguments isKindOfClass:[NSMutableArray class]] && [inArguments count]>0) {
         isUnZipWithPassword = YES;
         [self unzip:inArguments];
     }
+}
+
+-(void)mainThreadCallBack:(NSString *)jsString{
+    if ([NSThread isMainThread]) {
+        [self.meBrwView stringByEvaluatingJavaScriptFromString:jsString];
+    }else{
+        [self performSelectorOnMainThread:@selector(callBackMethod:) withObject:jsString waitUntilDone:NO];
+    }
+}
+
+-(void)callBackMethod:(NSString *)jsString{
+    [self.meBrwView stringByEvaluatingJavaScriptFromString:jsString];
 }
 
 @end
