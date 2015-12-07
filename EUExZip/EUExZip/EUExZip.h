@@ -8,7 +8,7 @@
 
 
 #import "EUExBase.h"
-#import "ZipArchive.h"
+#import "UexZipArchive.h"
 
 @interface EUExZip : EUExBase {
     BOOL isZipWithPassword;

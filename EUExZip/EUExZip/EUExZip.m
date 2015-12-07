@@ -44,7 +44,7 @@
 			[fmanager createDirectoryAtPath:docpath withIntermediateDirectories:YES attributes:nil error:nil];
 		}
         //12.29 zip
-		ZipArchive *zipObj = [[ZipArchive alloc] init];
+		UexZipArchive *zipObj = [[UexZipArchive alloc] init];
         if (isZipWithPassword) {
             State = isZipWithPassword;
             [zipObj CreateZipFile2:trueZippedPath Password:inPassword];
@@ -128,7 +128,7 @@
             [fmanager createDirectoryAtPath:trueUnzippedPath withIntermediateDirectories:YES attributes:nil error:nil];
         }
         if ([fmanager fileExistsAtPath:trueSrcPath]) {
-            ZipArchive *zipObj = [[ZipArchive alloc] init];
+            UexZipArchive *zipObj = [[UexZipArchive alloc] init];
             if (isUnZipWithPassword) {
                 ret = [zipObj UnzipOpenFile:trueSrcPath Password:inPassword];
             }else{
