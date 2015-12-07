@@ -25,7 +25,7 @@
 @end
 
 
-@interface ZipArchive : NSObject {
+@interface UexZipArchive : NSObject {
 @private
 	zipFile		_zipFile;
 	unzFile		_unzFile;

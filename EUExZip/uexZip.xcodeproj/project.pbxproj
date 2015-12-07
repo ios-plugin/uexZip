@@ -21,6 +21,7 @@
 		A053A0D918C180FB00839F88 /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = A053A0CF18C180FB00839F88 /* mztools.c */; };
 		A053A0DA18C180FB00839F88 /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = A053A0D118C180FB00839F88 /* unzip.c */; };
 		A053A0DB18C180FB00839F88 /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = A053A0D318C180FB00839F88 /* zip.c */; };
+		F76C30921BAFAC27006AB42A /* UexZipArchive.mm in Sources */ = {isa = PBXBuildFile; fileRef = F76C30911BAFAC27006AB42A /* UexZipArchive.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -61,7 +62,8 @@
 		A053A0D218C180FB00839F88 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		A053A0D318C180FB00839F88 /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
 		A053A0D418C180FB00839F88 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
-		A053A0D518C180FB00839F88 /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
+		F76C30901BAFAC27006AB42A /* UexZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UexZipArchive.h; sourceTree = "<group>"; };
+		F76C30911BAFAC27006AB42A /* UexZipArchive.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UexZipArchive.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,8 +145,9 @@
 		A053A0CA18C180FB00839F88 /* sourceCode */ = {
 			isa = PBXGroup;
 			children = (
+				F76C30901BAFAC27006AB42A /* UexZipArchive.h */,
+				F76C30911BAFAC27006AB42A /* UexZipArchive.mm */,
 				A053A0CB18C180FB00839F88 /* minizip */,
-				A053A0D518C180FB00839F88 /* ZipArchive.h */,
 			);
 			name = sourceCode;
 			path = EUExZip/sourceCode;
@@ -218,6 +221,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A053A0D818C180FB00839F88 /* ioapi.c in Sources */,
+				F76C30921BAFAC27006AB42A /* UexZipArchive.mm in Sources */,
 				A053A0D718C180FB00839F88 /* EUExZip.m in Sources */,
 				A053A0DA18C180FB00839F88 /* unzip.c in Sources */,
 				A053A0DB18C180FB00839F88 /* zip.c in Sources */,

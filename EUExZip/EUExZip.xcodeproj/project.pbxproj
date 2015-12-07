@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		034BF62618B2EED00074D5B7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 034BF62518B2EED00074D5B7 /* Foundation.framework */; };
 		034BF65E18B2EF400074D5B7 /* EUExZip.m in Sources */ = {isa = PBXBuildFile; fileRef = 034BF65018B2EF400074D5B7 /* EUExZip.m */; };
+		F76C308E1BAFA95C006AB42A /* UexZipArchive.mm in Sources */ = {isa = PBXBuildFile; fileRef = F76C308D1BAFA95C006AB42A /* UexZipArchive.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,7 +38,8 @@
 		034BF65718B2EF400074D5B7 /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
 		034BF65918B2EF400074D5B7 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		034BF65B18B2EF400074D5B7 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
-		034BF65C18B2EF400074D5B7 /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
+		034BF65C18B2EF400074D5B7 /* UexZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UexZipArchive.h; sourceTree = "<group>"; };
+		F76C308D1BAFA95C006AB42A /* UexZipArchive.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UexZipArchive.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,7 +113,8 @@
 			isa = PBXGroup;
 			children = (
 				034BF65218B2EF400074D5B7 /* minizip */,
-				034BF65C18B2EF400074D5B7 /* ZipArchive.h */,
+				034BF65C18B2EF400074D5B7 /* UexZipArchive.h */,
+				F76C308D1BAFA95C006AB42A /* UexZipArchive.mm */,
 			);
 			path = sourceCode;
 			sourceTree = "<group>";
@@ -179,6 +182,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F76C308E1BAFA95C006AB42A /* UexZipArchive.mm in Sources */,
 				034BF65E18B2EF400074D5B7 /* EUExZip.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

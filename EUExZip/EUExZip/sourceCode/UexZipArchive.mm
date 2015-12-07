@@ -2,18 +2,17 @@
 //  ZipArchive.mm
 //  
 //
-//  Created by aish on 08-9-11.
-//  acsolu@gmail.com
+//  Created by AppCan on 08-9-11.
+//
 //  Copyright 2008  Inc. All rights reserved.
 //
 
-#import "ZipArchive.h"
+#import "UexZipArchive.h"
 #import "zlib.h"
 #import "zconf.h"
-#import "EUtility.h"
 
 
-@interface ZipArchive (Private)
+@interface UexZipArchive (Private)
 
 -(void) OutputErrorMessage:(NSString*) msg;
 -(BOOL) OverWrite:(NSString*) file;
@@ -22,7 +21,7 @@
 
 
 
-@implementation ZipArchive
+@implementation UexZipArchive
 @synthesize delegate = _delegate;
 
 -(id) init
@@ -42,7 +41,6 @@
 
 -(BOOL) CreateZipFile2:(NSString*) zipFile
 {
-	NSLog(@"zipFile = %@",zipFile);
 	_zipFile = zipOpen( (const char*)[zipFile UTF8String], 0 );
 	if( !_zipFile ) 
 		return NO;
@@ -57,87 +55,94 @@
 
 -(BOOL) addFileToZip:(NSString*) file newname:(NSString*) newname;
 {
-	if( !_zipFile )
-		return NO;
-//	tm_zip filetime;
-	time_t current;
-	time( &current );
-	
-	zip_fileinfo zipInfo = {0};
-//	zipInfo.dosDate = (unsigned long) current;
-	
-	NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:file error:nil];
-	if( attr )
-	{
-		NSDate* fileDate = (NSDate*)[attr objectForKey:NSFileModificationDate];
-		if( fileDate )
-		{
-			// some application does use dosDate, but tmz_date instead
-		//	zipInfo.dosDate = [fileDate timeIntervalSinceDate:[self Date1980] ];
-			NSCalendar* currCalendar = [NSCalendar currentCalendar];
-			uint flags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | 
-				NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit ;
-			NSDateComponents* dc = [currCalendar components:flags fromDate:fileDate];
-			zipInfo.tmz_date.tm_sec = [dc second];
-			zipInfo.tmz_date.tm_min = [dc minute];
-			zipInfo.tmz_date.tm_hour = [dc hour];
-			zipInfo.tmz_date.tm_mday = [dc day];
-			zipInfo.tmz_date.tm_mon = [dc month] - 1;
-			zipInfo.tmz_date.tm_year = [dc year];
-		}
-	}
-	
-	int ret ;
-	NSData* data = nil;
-	if( [_password length] == 0 )
-	{
-		ret = zipOpenNewFileInZip( _zipFile,
-								  (const char*) [newname UTF8String],
-								  &zipInfo,
-								  NULL,0,
-								  NULL,0,
-								  NULL,//comment
-								  Z_DEFLATED,
-								  Z_DEFAULT_COMPRESSION );
-	}
-	else
-	{
-		data = [ NSData dataWithContentsOfFile:file];
-		uLong crcValue = crc32( 0L,NULL, 0L );
-		crcValue = crc32( crcValue, (const Bytef*)[data bytes], [data length] );
-		ret = zipOpenNewFileInZip3( _zipFile,
-								  (const char*) [newname UTF8String],
-								  &zipInfo,
-								  NULL,0,
-								  NULL,0,
-								  NULL,//comment
-								  Z_DEFLATED,
-								  Z_DEFAULT_COMPRESSION,
-								  0,
-								  15,
-								  8,
-								  Z_DEFAULT_STRATEGY,
-								  [_password cStringUsingEncoding:NSASCIIStringEncoding],
-								  crcValue );
-	}
-	if( ret!=Z_OK )
-	{
-		return NO;
-	}
-	if( data==nil )
-	{
-		data = [ NSData dataWithContentsOfFile:file];
-	}
-	unsigned int dataLen = [data length];
-	ret = zipWriteInFileInZip( _zipFile, (const void*)[data bytes], dataLen);
-	if( ret!=Z_OK )
-	{
-		return NO;
-	}
-	ret = zipCloseFileInZip( _zipFile );
-	if( ret!=Z_OK )
-		return NO;
-	return YES;
+    if( !_zipFile )
+        return NO;
+    //	tm_zip filetime;
+    time_t current;
+    time( &current );
+    
+    zip_fileinfo zipInfo = {0};
+    //	zipInfo.dosDate = (unsigned long) current;
+    
+    NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:file error:nil];
+    if( attr )
+    {
+        NSDate* fileDate = (NSDate*)[attr objectForKey:NSFileModificationDate];
+        if( fileDate )
+        {
+            // some application does use dosDate, but tmz_date instead
+            //	zipInfo.dosDate = [fileDate timeIntervalSinceDate:[self Date1980] ];
+            NSCalendar* currCalendar = [NSCalendar currentCalendar];
+            uint flags = NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit |
+            NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit ;
+            NSDateComponents* dc = [currCalendar components:flags fromDate:fileDate];
+            zipInfo.tmz_date.tm_sec = [dc second];
+            zipInfo.tmz_date.tm_min = [dc minute];
+            zipInfo.tmz_date.tm_hour = [dc hour];
+            zipInfo.tmz_date.tm_mday = [dc day];
+            zipInfo.tmz_date.tm_mon = [dc month] - 1;
+            zipInfo.tmz_date.tm_year = [dc year];
+        }
+    }
+    
+    int ret ;
+    NSData* data = nil;
+    if( [_password length] == 0 )
+    {
+        ret = zipOpenNewFileInZip( _zipFile,
+                                  //(const char*) [newname UTF8String],
+                                  //压缩包含中文的文件时，到windows下解压后出现乱码这个问题原因是Ios版本的ZipArchive工程中，编码格式变为UTF-8.然后windows上的编码格式多数是GBK。
+                                  ( const char *) [newname cStringUsingEncoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingGB_18030_2000 )],
+                                  &zipInfo,
+                                  NULL,0,
+                                  NULL,0,
+                                  NULL,//comment
+                                  Z_DEFLATED,
+                                  Z_DEFAULT_COMPRESSION );
+    }
+    
+    
+    
+    
+    else
+    {
+        data = [ NSData dataWithContentsOfFile:file];
+        uLong crcValue = crc32( 0L,NULL, 0L );
+        crcValue = crc32( crcValue, (const Bytef*)[data bytes], [data length] );
+        ret = zipOpenNewFileInZip3( _zipFile,
+                                   // (const char*) [newname UTF8String],
+                                   ( const char *) [newname cStringUsingEncoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingGB_18030_2000 )],
+                                   &zipInfo,
+                                   NULL,0,
+                                   NULL,0,
+                                   NULL,//comment
+                                   Z_DEFLATED,
+                                   Z_DEFAULT_COMPRESSION,
+                                   0,
+                                   15,
+                                   8,
+                                   Z_DEFAULT_STRATEGY,
+                                   [_password cStringUsingEncoding:NSASCIIStringEncoding],
+                                   crcValue );
+    }
+    if( ret!=Z_OK )
+    {
+        return NO;
+    }
+    if( data==nil )
+    {
+        data = [ NSData dataWithContentsOfFile:file];
+    }
+    unsigned int dataLen = [data length];
+    ret = zipWriteInFileInZip( _zipFile, (const void*)[data bytes], dataLen);
+    if( ret!=Z_OK )
+    {
+        return NO;
+    }
+    ret = zipCloseFileInZip( _zipFile );
+    if( ret!=Z_OK )
+        return NO;
+    return YES;
 }
 
 -(BOOL) CloseZipFile2
@@ -152,14 +157,13 @@
 
 -(BOOL) UnzipOpenFile:(NSString*) zipFile
 {
-	NSLog(@"zipfileopen_____________%@",zipFile);
 	_unzFile = unzOpen( (const char*)[zipFile UTF8String] );
 	if( _unzFile )
 	{
 		unz_global_info  globalInfo = {0};
 		if( unzGetGlobalInfo(_unzFile, &globalInfo )==UNZ_OK )
 		{
-			NSLog(@"entries in the zip file");
+			//
 		}
 	}
 	return _unzFile!=NULL;
@@ -173,7 +177,6 @@
 
 -(BOOL) UnzipFileTo:(NSString*) path overWrite:(BOOL) overwrite
 {
-	NSLog(@"unzipopenfile_________%@",path);
 	BOOL success = YES;
 	int ret = unzGoToFirstFile( _unzFile );
 	unsigned char		buffer[4096] = {0};
@@ -197,7 +200,9 @@
 		// reading data and write to file
 		int read ;
 		unz_file_info	fileInfo ={0};
+        
 		ret = unzGetCurrentFileInfo(_unzFile, &fileInfo, NULL, 0, NULL, 0, NULL, 0);
+        
 		if( ret!=UNZ_OK )
 		{
 			[self OutputErrorMessage:@"Error occurs while getting file info"];
@@ -209,10 +214,19 @@
 		unzGetCurrentFileInfo(_unzFile, &fileInfo, filename, fileInfo.size_filename + 1, NULL, 0, NULL, 0);
 		filename[fileInfo.size_filename] = '\0';
 		
+       NSString * strPath = [NSString stringWithUTF8String:filename];
+        
+        if (strPath == nil) {
+            
+            NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingGB_18030_2000);
+            strPath = [NSString  stringWithCString:filename encoding:enc];
+            
+        }
+        
 //		// check if it contains directory
 //		NSString * strPath = [NSString  stringWithCString:filename];
         // Character encoding error for Chinese
-        NSString * strPath = [NSString stringWithUTF8String:filename];
+        //strPath = [NSString stringWithUTF8String:filename];
         
 		BOOL isDirectory = NO;
 		if( filename[fileInfo.size_filename-1]=='/' || filename[fileInfo.size_filename-1]=='\\')
@@ -247,6 +261,7 @@
 			}
 			else if( read<0 )
 			{
+                success = NO;
 				[self OutputErrorMessage:@"Failed to reading zip file"];
 				break;
 			}
@@ -285,7 +300,6 @@
 				if( ![[NSFileManager defaultManager] setAttributes:attr ofItemAtPath:fullPath error:nil] )
 				{
 					// cann't set attributes 
-					NSLog(@"Failed to set attributes");
 				}
 				
 			}
