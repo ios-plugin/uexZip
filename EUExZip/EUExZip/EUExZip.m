@@ -10,13 +10,16 @@
 #import "EUtility.h"
  #import "EUExBaseDefine.h"
 
+@interface EUExZip()
+@property(nonatomic,strong) ACJSFunctionRef *func;
+@end
 @implementation EUExZip
 
--(id)initWithBrwView:(EBrowserView *) eInBrwView{	
-	if (self = [super initWithBrwView:eInBrwView]) {
-	}
-	return self;
-}
+//-(id)initWithBrwView:(EBrowserView *) eInBrwView{	
+//	if (self = [super initWithBrwView:eInBrwView]) {
+//	}
+//	return self;
+//}
 
 -(void)dealloc{
 	[super dealloc];
@@ -81,18 +84,20 @@
 		[zipObj release];
         isZipWithPassword = NO;
 		if ([fmanager fileExistsAtPath:trueZippedPath]) {
-            NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbZip",@"uexZip.cbZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CSUCCESS];
-            [self mainThreadCallBack:jsString];
+           //NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbZip",@"uexZip.cbZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CSUCCESS];
+            [self mainThreadCallBack:@"uexZip.cbZip" Function:self.func Param1:@0 Param2:@2 Param3:@0];
 
 		}else {
-            NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbZip",@"uexZip.cbZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CFAILED];
-            [self mainThreadCallBack:jsString];
+           // NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbZip",@"uexZip.cbZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CFAILED];
+             [self mainThreadCallBack:@"uexZip.cbZip" Function:self.func Param1:@0 Param2:@2 Param3:@1];
 		}
 	}else{
-        NSString *inErrorDes =[UEX_ERROR_DESCRIBE_ARGS stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        NSString *jsFailedStr = [NSString stringWithFormat:@"if(uexWidgetOne.cbError!=null){uexWidgetOne.cbError(%d,%d,\'%@\');}",0,1260101,inErrorDes];
-        [self mainThreadCallBack:jsFailedStr];
+        //NSString *inErrorDes =[UEX_ERROR_DESCRIBE_ARGS stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        //NSString *jsFailedStr = [NSString stringWithFormat:@"if(uexWidgetOne.cbError!=null){uexWidgetOne.cbError(%d,%d,\'%@\');}",0,1260101,inErrorDes];
+        //[self mainThreadCallBack:jsFailedStr];
+        
 	}
+    self.func = nil;
 }
 
 -(void)zipWithPassword:(NSMutableArray *)inArguments {
@@ -103,7 +108,8 @@
 }
 
 -(void)zip:(NSMutableArray *)inArguments {
-    
+    ACJSFunctionRef *func = JSFunctionArg(inArguments.lastObject);
+    self.func = func;
     [NSThread detachNewThreadSelector:@selector(zipThread:) toTarget:self withObject:inArguments];
 }
 
@@ -140,8 +146,9 @@
                     NSError *error;
                     [fmanager removeItemAtPath:trueUnzippedPath error:&error];
                     
-                    NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbUnZip",@"uexZip.cbUnZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CFAILED];
-                    [self mainThreadCallBack:jsString];
+                    //NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbUnZip",@"uexZip.cbUnZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CFAILED];
+                    //[self mainThreadCallBack:jsString];
+                    [self mainThreadCallBack:@"uexZip.cbUnZip" Function:self.func Param1:@0 Param2:@2 Param3:@1];
 
                     return;
                 }else{
@@ -154,29 +161,32 @@
         }
         isUnZipWithPassword = NO;
         if (ret) {
-            NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbUnZip",@"uexZip.cbUnZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CSUCCESS];
-            [self mainThreadCallBack:jsString];
+            //NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbUnZip",@"uexZip.cbUnZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CSUCCESS];
+            //[self mainThreadCallBack:jsString];
+             [self mainThreadCallBack:@"uexZip.cbUnZip" Function:self.func Param1:@0 Param2:@2 Param3:@0];
 
         }else {
             NSError *error;
             [fmanager removeItemAtPath:trueUnzippedPath error:&error];
             
-            NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbUnZip",@"uexZip.cbUnZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CFAILED];
-            [self mainThreadCallBack:jsString];
+            //NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbUnZip",@"uexZip.cbUnZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CFAILED];
+            //[self mainThreadCallBack:jsString];
+             [self mainThreadCallBack:@"uexZip.cbUnZip" Function:self.func Param1:@0 Param2:@2 Param3:@1];
 
         } 		
     }else{
-        NSString *inErrorDes =[UEX_ERROR_DESCRIBE_ARGS stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        NSString *jsFailedStr = [NSString stringWithFormat:@"if(uexWidgetOne.cbError!=null){uexWidgetOne.cbError(%d,%d,\'%@\');}",0,1260201,inErrorDes];
-        [self mainThreadCallBack:jsFailedStr];
+//        NSString *inErrorDes =[UEX_ERROR_DESCRIBE_ARGS stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+//        NSString *jsFailedStr = [NSString stringWithFormat:@"if(uexWidgetOne.cbError!=null){uexWidgetOne.cbError(%d,%d,\'%@\');}",0,1260201,inErrorDes];
+//        [self mainThreadCallBack:jsFailedStr];
 
     }
-
+    self.func = nil;
 }
 
 
 -(void)unzip:(NSMutableArray *)inArguments {
-    
+    ACJSFunctionRef *func = JSFunctionArg(inArguments.lastObject);
+    self.func = func;
     [NSThread detachNewThreadSelector:@selector(unzipThread:) toTarget:self withObject:inArguments];
 }
 
@@ -188,16 +198,23 @@
     }
 }
 
--(void)mainThreadCallBack:(NSString *)jsString{
+-(void)mainThreadCallBack:(NSString *)functionName Function:(ACJSFunctionRef*)func Param1:(NSNumber*)result1 Param2:(NSNumber*)result2 Param3:(NSNumber*)result3{
+    NSNumber *result = [result3 intValue]?@(NO):@(YES);
     if ([NSThread isMainThread]) {
-        [self.meBrwView stringByEvaluatingJavaScriptFromString:jsString];
+        //[self.meBrwView stringByEvaluatingJavaScriptFromString:jsString];
+        [self.webViewEngine callbackWithFunctionKeyPath:functionName arguments:ACArgsPack(result1,result2,result3)];
+        [func executeWithArguments:ACArgsPack(result)];
     }else{
-        [self performSelectorOnMainThread:@selector(callBackMethod:) withObject:jsString waitUntilDone:NO];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.webViewEngine callbackWithFunctionKeyPath:functionName arguments:ACArgsPack(result1,result2,result3)];
+            [func executeWithArguments:ACArgsPack(result)];
+        });
+        //[self performSelectorOnMainThread:@selector(callBackMethod:) withObject:jsString waitUntilDone:NO];
     }
 }
 
--(void)callBackMethod:(NSString *)jsString{
-    [self.meBrwView stringByEvaluatingJavaScriptFromString:jsString];
-}
+//-(void)callBackMethod:(NSString *)jsString{
+//    [self.meBrwView stringByEvaluatingJavaScriptFromString:jsString];
+//}
 
 @end

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		034BF62618B2EED00074D5B7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 034BF62518B2EED00074D5B7 /* Foundation.framework */; };
 		034BF65E18B2EF400074D5B7 /* EUExZip.m in Sources */ = {isa = PBXBuildFile; fileRef = 034BF65018B2EF400074D5B7 /* EUExZip.m */; };
+		2171792D1D34829B006C4582 /* AppCanKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2171792C1D34829B006C4582 /* AppCanKit.framework */; };
 		F76C308E1BAFA95C006AB42A /* UexZipArchive.mm in Sources */ = {isa = PBXBuildFile; fileRef = F76C308D1BAFA95C006AB42A /* UexZipArchive.mm */; };
 /* End PBXBuildFile section */
 
@@ -28,7 +29,6 @@
 		034BF62218B2EED00074D5B7 /* libuexZip.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libuexZip.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		034BF62518B2EED00074D5B7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		034BF62918B2EED00074D5B7 /* EUExZip-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EUExZip-Prefix.pch"; sourceTree = "<group>"; };
-		034BF64C18B2EF400074D5B7 /* EUExBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EUExBase.h; sourceTree = "<group>"; };
 		034BF64D18B2EF400074D5B7 /* EUExBaseDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EUExBaseDefine.h; sourceTree = "<group>"; };
 		034BF64E18B2EF400074D5B7 /* EUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EUtility.h; sourceTree = "<group>"; };
 		034BF64F18B2EF400074D5B7 /* EUExZip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EUExZip.h; sourceTree = "<group>"; };
@@ -39,6 +39,7 @@
 		034BF65918B2EF400074D5B7 /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		034BF65B18B2EF400074D5B7 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		034BF65C18B2EF400074D5B7 /* UexZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UexZipArchive.h; sourceTree = "<group>"; };
+		2171792C1D34829B006C4582 /* AppCanKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AppCanKit.framework; sourceTree = "<group>"; };
 		F76C308D1BAFA95C006AB42A /* UexZipArchive.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UexZipArchive.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -47,6 +48,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2171792D1D34829B006C4582 /* AppCanKit.framework in Frameworks */,
 				034BF62618B2EED00074D5B7 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -102,7 +104,7 @@
 		034BF64B18B2EF400074D5B7 /* engineHeader */ = {
 			isa = PBXGroup;
 			children = (
-				034BF64C18B2EF400074D5B7 /* EUExBase.h */,
+				2171792C1D34829B006C4582 /* AppCanKit.framework */,
 				034BF64D18B2EF400074D5B7 /* EUExBaseDefine.h */,
 				034BF64E18B2EF400074D5B7 /* EUtility.h */,
 			);
@@ -268,6 +270,10 @@
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/uexZip";
 				DSTROOT = /tmp/EUExZip.dst;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/EUExZip/engineHeader",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EUExZip/EUExZip-Prefix.pch";
 				ONLY_ACTIVE_ARCH = NO;
@@ -284,6 +290,10 @@
 				CLANG_ENABLE_OBJC_ARC = NO;
 				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/uexZip";
 				DSTROOT = /tmp/EUExZip.dst;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/EUExZip/engineHeader",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EUExZip/EUExZip-Prefix.pch";
 				ONLY_ACTIVE_ARCH = NO;
