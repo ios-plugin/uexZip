@@ -15,14 +15,10 @@
 @end
 @implementation EUExZip
 
-//-(id)initWithBrwView:(EBrowserView *) eInBrwView{	
-//	if (self = [super initWithBrwView:eInBrwView]) {
-//	}
-//	return self;
-//}
+
 
 -(void)dealloc{
-	[super dealloc];
+	
 }
 
 
@@ -31,7 +27,7 @@
 	NSString *inZippedPath = [inArguments objectAtIndex:1];
     NSString *inPassword = nil;
     if (isZipWithPassword) {
-        inPassword = [inArguments objectAtIndex:2];
+        inPassword = [NSString stringWithFormat:@"%@",[inArguments objectAtIndex:2]];
     }
 	BOOL ret = NO;
 	NSString *trueSrcPath = [super absPath:inSrcPath];
@@ -78,10 +74,9 @@
             }  
         }
         if (ret) {
-            //
+            
         }
 		[zipObj CloseZipFile2];
-		[zipObj release];
         isZipWithPassword = NO;
 		if ([fmanager fileExistsAtPath:trueZippedPath]) {
            //NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbZip",@"uexZip.cbZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CSUCCESS];
@@ -121,7 +116,7 @@
     
     if (isUnZipWithPassword) {
         if ([inArguments isKindOfClass:[NSMutableArray class]] && [inArguments count]>2) {
-            inPassword = [inArguments objectAtIndex:2];
+            inPassword = [NSString stringWithFormat:@"%@",[inArguments objectAtIndex:2]];
         }
     }
     
@@ -141,7 +136,6 @@
                 //当state为yes 证明是带有密码的压缩包 需要使用 UnzipOpenFile Password 接口
                 if (State) {
                     [zipObj UnzipCloseFile];
-                    [zipObj release];
                     isUnZipWithPassword = NO;
                     NSError *error;
                     [fmanager removeItemAtPath:trueUnzippedPath error:&error];
@@ -157,7 +151,6 @@
             }
             ret = [zipObj UnzipFileTo:trueUnzippedPath overWrite:YES];
             [zipObj UnzipCloseFile];
-            [zipObj release];
         }
         isUnZipWithPassword = NO;
         if (ret) {
@@ -199,22 +192,16 @@
 }
 
 -(void)mainThreadCallBack:(NSString *)functionName Function:(ACJSFunctionRef*)func Param1:(NSNumber*)result1 Param2:(NSNumber*)result2 Param3:(NSNumber*)result3{
-    NSNumber *result = [result3 intValue]?@(NO):@(YES);
     if ([NSThread isMainThread]) {
-        //[self.meBrwView stringByEvaluatingJavaScriptFromString:jsString];
         [self.webViewEngine callbackWithFunctionKeyPath:functionName arguments:ACArgsPack(result1,result2,result3)];
-        [func executeWithArguments:ACArgsPack(result)];
+        [func executeWithArguments:ACArgsPack(result3)];
     }else{
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.webViewEngine callbackWithFunctionKeyPath:functionName arguments:ACArgsPack(result1,result2,result3)];
-            [func executeWithArguments:ACArgsPack(result)];
+            [func executeWithArguments:ACArgsPack(result3)];
         });
-        //[self performSelectorOnMainThread:@selector(callBackMethod:) withObject:jsString waitUntilDone:NO];
+       
     }
 }
-
-//-(void)callBackMethod:(NSString *)jsString{
-//    [self.meBrwView stringByEvaluatingJavaScriptFromString:jsString];
-//}
 
 @end
