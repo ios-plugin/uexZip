@@ -7,7 +7,7 @@
 //
 
 
-#import "EUExBase.h"
+
 #import "UexZipArchive.h"
 
 @interface EUExZip : EUExBase {
