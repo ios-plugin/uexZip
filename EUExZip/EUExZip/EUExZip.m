@@ -193,8 +193,10 @@
 
 -(void)mainThreadCallBack:(NSString *)functionName Function:(ACJSFunctionRef*)func Param1:(NSNumber*)result1 Param2:(NSNumber*)result2 Param3:(NSNumber*)result3{
     if ([NSThread isMainThread]) {
-        [self.webViewEngine callbackWithFunctionKeyPath:functionName arguments:ACArgsPack(result1,result2,result3)];
-        [func executeWithArguments:ACArgsPack(result3)];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.webViewEngine callbackWithFunctionKeyPath:functionName arguments:ACArgsPack(result1,result2,result3)];
+            [func executeWithArguments:ACArgsPack(result3)];
+        });
     }else{
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.webViewEngine callbackWithFunctionKeyPath:functionName arguments:ACArgsPack(result1,result2,result3)];
