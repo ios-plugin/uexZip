@@ -23,6 +23,7 @@
 
 
 -(void)zipThread:(NSMutableArray *)inArguments {
+    [[NSThread currentThread] setName:@"zipThread"];
 	NSString *inSrcPath = [inArguments objectAtIndex:0];
 	NSString *inZippedPath = [inArguments objectAtIndex:1];
     NSString *inPassword = nil;
@@ -92,7 +93,13 @@
         //[self mainThreadCallBack:jsFailedStr];
         
 	}
-    self.func = nil;
+    if ([NSThread isMainThread]) {
+        self.func = nil;
+    }else{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.func = nil;
+        });
+    }
 }
 
 -(void)zipWithPassword:(NSMutableArray *)inArguments {
@@ -110,6 +117,7 @@
 
 
 -(void)unzipThread:(NSMutableArray *)inArguments {
+    [[NSThread currentThread] setName:@"UnzipThread"];
     NSString *inSrcPath = [inArguments objectAtIndex:0];
     NSString *inunZippedPath = [inArguments objectAtIndex:1];
     NSString *inPassword = nil;
@@ -142,7 +150,7 @@
                     
                     //NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbUnZip",@"uexZip.cbUnZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CFAILED];
                     //[self mainThreadCallBack:jsString];
-                    [self mainThreadCallBack:@"uexZip.cbUnZip" Function:self.func Param1:@0 Param2:@2 Param3:@1];
+                    [self mainThreadCallBack:@"uexZip.cbUnZip" Function:_func Param1:@0 Param2:@2 Param3:@1];
 
                     return;
                 }else{
@@ -156,7 +164,7 @@
         if (ret) {
             //NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbUnZip",@"uexZip.cbUnZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CSUCCESS];
             //[self mainThreadCallBack:jsString];
-             [self mainThreadCallBack:@"uexZip.cbUnZip" Function:self.func Param1:@0 Param2:@2 Param3:@0];
+             [self mainThreadCallBack:@"uexZip.cbUnZip" Function:_func Param1:@0 Param2:@2 Param3:@0];
 
         }else {
             NSError *error;
@@ -164,18 +172,32 @@
             
             //NSString *jsString = [NSString stringWithFormat:@"if(%@!=null){%@(%d,%d,%d);}",@"uexZip.cbUnZip",@"uexZip.cbUnZip", 0, UEX_CALLBACK_DATATYPE_INT, UEX_CFAILED];
             //[self mainThreadCallBack:jsString];
-             [self mainThreadCallBack:@"uexZip.cbUnZip" Function:self.func Param1:@0 Param2:@2 Param3:@1];
+             [self mainThreadCallBack:@"uexZip.cbUnZip" Function:_func Param1:@0 Param2:@2 Param3:@1];
 
         } 		
     }else{
 //        NSString *inErrorDes =[UEX_ERROR_DESCRIBE_ARGS stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 //        NSString *jsFailedStr = [NSString stringWithFormat:@"if(uexWidgetOne.cbError!=null){uexWidgetOne.cbError(%d,%d,\'%@\');}",0,1260201,inErrorDes];
 //        [self mainThreadCallBack:jsFailedStr];
-
     }
-    self.func = nil;
+    if ([NSThread isMainThread]) {
+        [self setNilCallbackFunc];
+    }else{
+        __weak typeof (self) weakSelf = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,(int64_t)(2.0* NSEC_PER_SEC)),dispatch_get_main_queue(),^{
+            [weakSelf setNilCallbackFunc];
+            NSLog(@"uexZip===>setNilCallbackFunc");
+        });
+//        dispatch_async(dispatch_get_main_queue(),^{
+//            [weakSelf setNilCallbackFunc];
+//            NSLog(@"uexZip===>setNilCallbackFunc");
+//        });
+    }
 }
 
+-(void)setNilCallbackFunc {
+    _func = nil;
+}
 
 -(void)unzip:(NSMutableArray *)inArguments {
     ACJSFunctionRef *func = JSFunctionArg(inArguments.lastObject);
@@ -193,14 +215,15 @@
 
 -(void)mainThreadCallBack:(NSString *)functionName Function:(ACJSFunctionRef*)func Param1:(NSNumber*)result1 Param2:(NSNumber*)result2 Param3:(NSNumber*)result3{
     if ([NSThread isMainThread]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.webViewEngine callbackWithFunctionKeyPath:functionName arguments:ACArgsPack(result1,result2,result3)];
-            [func executeWithArguments:ACArgsPack(result3)];
-        });
+        [self.webViewEngine callbackWithFunctionKeyPath:functionName arguments:ACArgsPack(result1,result2,result3)];
+        [func executeWithArguments:ACArgsPack(result3)];
     }else{
+        __weak typeof (self) weakSelf = self;
+//        __block typeof (ACJSFunctionRef*) weakFunc = func;
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.webViewEngine callbackWithFunctionKeyPath:functionName arguments:ACArgsPack(result1,result2,result3)];
-            [func executeWithArguments:ACArgsPack(result3)];
+            [weakSelf.webViewEngine callbackWithFunctionKeyPath:functionName arguments:ACArgsPack(result1,result2,result3)];
+            [weakSelf.func executeWithArguments:ACArgsPack(result3)];
+            NSLog(@"uexZip===>mainThreadCallBack");
         });
        
     }
